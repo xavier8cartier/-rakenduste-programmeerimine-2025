@@ -1,4 +1,4 @@
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField, Snackbar, Alert } from "@mui/material";
 import React, { useState } from "react";
 
 type SubmitCatProps = {
@@ -7,6 +7,11 @@ type SubmitCatProps = {
 
 const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
   const [name, setName] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   const submitCat = async () => {
     try {
@@ -20,22 +25,33 @@ const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
       });
 
       if (response.ok) {
-        console.log("Success", response);
-        // Snackbar success
+        console.log("Cat submitted successfully");
+        setSnackbarMessage("Success");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+        setName(""); // Clear input after success
       } else {
-        console.warn("No success");
-        // Snackbar
+        console.error("Failed to submit cat");
+        setSnackbarMessage("No success");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     } catch (error) {
-      console.warn(error);
+      console.error("Error submitting cat:", error);
+      setSnackbarMessage("No success");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-
     submitCat();
     setTimeout(fetchCats, 100);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -46,6 +62,7 @@ const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
         <Stack>
           <TextField
             label="Cat name"
+            value={name} // Add value prop for controlled input
             onChange={(event) => setName(event.target.value)}
           />
           <Button variant="contained" color="success" type="submit">
@@ -53,6 +70,20 @@ const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
           </Button>
         </Stack>
       </form>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2500}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
