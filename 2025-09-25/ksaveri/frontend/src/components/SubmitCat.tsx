@@ -29,7 +29,7 @@ const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
         setSnackbarMessage("Success");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        setName(""); // Clear input after success
+        setName("");
       } else {
         console.error("Failed to submit cat");
         setSnackbarMessage("No success");
@@ -62,7 +62,7 @@ const SubmitCat = ({ fetchCats }: SubmitCatProps) => {
         <Stack>
           <TextField
             label="Cat name"
-            value={name} // Add value prop for controlled input
+            value={name}
             onChange={(event) => setName(event.target.value)}
           />
           <Button variant="contained" color="success" type="submit">

@@ -1,6 +1,6 @@
 import { Box, List, ListItem, Typography, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import SubmitCat from "./SubmitCat.tsx";
+import SubmitCat from "./SubmitCat";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
