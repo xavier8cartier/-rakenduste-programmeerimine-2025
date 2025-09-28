@@ -49,3 +49,5 @@ exports.delete = (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+exports.todos = todos;
