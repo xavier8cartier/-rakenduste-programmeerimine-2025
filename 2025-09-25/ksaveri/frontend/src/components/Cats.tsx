@@ -73,7 +73,13 @@ const Cats = () => {
   return (
     <Box>
       <Typography variant="h1">Cats</Typography>
-      <CatsList cats={cats} onEdit={handleEdit} onDelete={handleDelete} />
+      <CatsList
+        cats={cats}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        fetchCats={fetchCats}
+      />{" "}
+      {/* Prop drilling: send fetchCats further  */}
       <SubmitCat fetchCats={fetchCats} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Edit Cat</DialogTitle>
@@ -100,9 +106,16 @@ type CatsListProps = {
   cats: Cat[];
   onEdit: (cat: Cat) => void;
   onDelete: (id: string) => void;
+  fetchCats: () => void;
 };
 
-const CatsList: React.FC<CatsListProps> = ({ cats, onEdit, onDelete }) => {
+const CatsList: React.FC<CatsListProps> = ({
+  cats,
+  onEdit,
+  onDelete,
+  fetchCats,
+}) => {
+  // Accepts fetchCats prop, but doesnt use it
   return (
     <List>
       {cats.map((cat) => (

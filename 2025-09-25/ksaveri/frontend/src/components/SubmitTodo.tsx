@@ -1,11 +1,13 @@
 import { Box, Button, Stack, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+// Context is imported
+import { TodoContext } from "./Todo";
 
-type SubmitTodoProps = {
-  fetchTodos: () => void;
-};
-
-const SubmitTodo = ({ fetchTodos }: SubmitTodoProps) => {
+const SubmitTodo = () => {
+  // Context is consumed here
+  const context = useContext(TodoContext);
+  if (!context) return null;
+  const { fetchTodos } = context;
   const [title, setTitle] = useState("");
 
   const submitTodo = async () => {
@@ -20,11 +22,8 @@ const SubmitTodo = ({ fetchTodos }: SubmitTodoProps) => {
       });
 
       if (response.ok) {
-        console.log("Success", response);
         setTitle("");
         fetchTodos();
-      } else {
-        console.warn("No success");
       }
     } catch (error) {
       console.warn(error);

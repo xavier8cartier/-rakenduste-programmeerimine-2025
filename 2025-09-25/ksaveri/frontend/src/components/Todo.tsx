@@ -1,5 +1,5 @@
 import { Box, List, ListItem, Typography, IconButton } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import SubmitTodo from "./SubmitTodo";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -17,6 +17,20 @@ type Todo = {
   updatedAt: number | null;
   deleted: boolean;
 };
+
+export const TodoContext = createContext<{
+  // Context is here
+  todos: Todo[];
+  fetchTodos: () => void;
+  handleEdit: (todo: Todo) => void;
+  submitEdit: () => void;
+  handleDelete: (id: string) => void;
+  editOpen: boolean;
+  setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  editTodo: Todo | null;
+  editTitle: string;
+  setEditTitle: React.Dispatch<React.SetStateAction<string>>;
+} | null>(null);
 
 const Todos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -74,47 +88,61 @@ const Todos = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h1">Todos</Typography>
-      <TodosList todos={todos} onEdit={handleEdit} onDelete={handleDelete} />
-      <SubmitTodo fetchTodos={fetchTodos} />
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
-        <DialogTitle>Edit Todo</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Todo title"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button onClick={submitEdit} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+    // Context is also here
+    <TodoContext.Provider
+      value={{
+        todos,
+        fetchTodos,
+        handleEdit,
+        submitEdit,
+        handleDelete,
+        editOpen,
+        setEditOpen,
+        editTodo,
+        editTitle,
+        setEditTitle,
+      }}
+    >
+      <Box>
+        <Typography variant="h1">Todos</Typography>
+        <TodosList />
+        <SubmitTodo />
+        <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
+          <DialogTitle>Edit Todo</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Todo title"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={submitEdit} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </TodoContext.Provider>
   );
 };
 
-type TodosListProps = {
-  todos: Todo[];
-  onEdit: (todo: Todo) => void;
-  onDelete: (id: string) => void;
-};
-
-const TodosList: React.FC<TodosListProps> = ({ todos, onEdit, onDelete }) => {
+const TodosList: React.FC = () => {
+  // Context is consumed here
+  const context = useContext(TodoContext);
+  if (!context) return null;
+  const { todos, handleEdit, handleDelete } = context;
   return (
     <List>
       {todos.map((todo) => (
         <ListItem key={todo.id}>
           {JSON.stringify(todo)}
-          <IconButton onClick={() => onEdit(todo)}>
+          <IconButton onClick={() => handleEdit(todo)}>
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => onDelete(todo.id)}>
+          <IconButton onClick={() => handleDelete(todo.id)}>
             <DeleteIcon />
           </IconButton>
         </ListItem>
